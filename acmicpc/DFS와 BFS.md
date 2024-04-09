@@ -93,3 +93,84 @@ function solution(n, m, v) {
 
 solution(n, m, v);
 ```
+
+## 풀이 날짜
+
+2024-04-09
+
+## 소스 코드
+
+```js
+const INPUT_NAME = '2.txt';
+const IN_BAEKJOON = false;
+
+const filePath = IN_BAEKJOON
+  ? '/dev/stdin'
+  : require('path').join(__dirname, 'inputs', INPUT_NAME);
+
+const input = require('fs')
+  .readFileSync(filePath)
+  .toString()
+  .trim()
+  .split('\n')
+  .map((item) => item.trim());
+
+const [N, M, V] = input[0].split(' ').map((n) => Number(n));
+const maps = Array.from({ length: N + 1 }, () =>
+  Array.from({ length: N + 1 }, () => 0)
+);
+
+input
+  .filter((_, i) => i > 0)
+  .forEach((item) => {
+    const [a, b] = item.split(' ').map((n) => Number(n));
+    maps[a][b] = 1;
+    maps[b][a] = 1;
+  });
+
+function solution() {
+  console.log(getDFSResult().join(' '));
+  console.log(getBFSResult().join(' '));
+}
+
+function getDFSResult() {
+  const routes = [];
+
+  const dfs = (vertex) => {
+    routes.push(vertex);
+
+    for (let i = 1; i < maps[vertex].length; i++) {
+      if (maps[vertex][i] && !routes.includes(i)) {
+        dfs(i);
+      }
+    }
+  };
+
+  dfs(V);
+
+  return routes;
+}
+
+function getBFSResult() {
+  const routes = [];
+  const queue = [];
+
+  routes.push(V);
+  queue.push(V);
+
+  while (queue.length > 0) {
+    const vertex = queue.shift();
+
+    for (let i = 0; i < maps[vertex].length; i++) {
+      if (maps[vertex][i] === 1 && !routes.includes(i)) {
+        routes.push(i);
+        queue.push(i);
+      }
+    }
+  }
+
+  return routes;
+}
+
+solution();
+```
